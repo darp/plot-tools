@@ -21,5 +21,5 @@ class ScatterPlot(AbstractPlot):
 
     def _plot_scatter1(self):
         
-        self._plot_scatter(self.X, self.Y, '')
+        self._plot_scatter(self, self.X, self.Y, '')
         

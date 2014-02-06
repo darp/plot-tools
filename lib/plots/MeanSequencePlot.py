@@ -1,8 +1,6 @@
 
 from lib.plots.AbstractPlot import AbstractPlot
 
-# TODO: rename to MeanSequencePlot
-
 class MeanSequencePlot(AbstractPlot):
 
     def __init__( self, means, stds ):

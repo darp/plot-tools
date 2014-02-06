@@ -14,14 +14,23 @@ class ScatterPlotTool(PipeTool):
 
     def processLine(self, line):
         
-        seq = [float(x) for x in line.split(' ')]
-        if len(seq) != 2:
-            sys.stderr.write('Warning: invalid line encountered.')
-            return
+        seq = self.lineTo2DPoints(line)
+        if seq == None: return
         
-        self.X.append(seq[0])
-        self.Y.append(seq[1])
+        XSeq = [s[0] for s in seq]
+        YSeq = [s[1] for s in seq]
+        self.X.append(XSeq)
+        self.Y.append(YSeq)
+      
     
+    def lineTo2DPoints(self, line):
+        seq = [float(x) for x in line.split(' ')]
+        if len(seq) % 2 != 0:
+            sys.stderr.write('Warning: invalid line encountered.')
+            return None
+    
+        return [(seq[2*i], seq[2*i+1]) for i in range(len(seq)/2)]
+        
     def streamEnd(self):
         
         plot = ScatterPlot(self.X, self.Y)

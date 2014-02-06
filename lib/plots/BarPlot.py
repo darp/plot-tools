@@ -23,11 +23,11 @@ class BarPlot(AbstractPlot):
         bars = np.array([10,20,30,25,40])
         text = 'Bar Plot'
         xlabels = ['a','b','c','d','e']
-        self._plot_bars( bars, text, xlabels ) 
+        self._plot_bars(self, bars, text, xlabels ) 
 
     def __plot_line1( self ):
         x = [0,1,2,3,4,5,6]
         y = np.ones(len(x))*4
         params = { 'color' : 'red' }
         label = 'Threshold'
-        self._plot_line( x, y, label, params )
+        self._plot_line(x, y, label, params )

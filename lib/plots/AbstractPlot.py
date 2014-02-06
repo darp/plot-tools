@@ -1,16 +1,19 @@
 '''
     Created on 2013-03-15
     
-    template for paper plots
+    Abstract Base Class for Plots
     
-    @author: darp
+    @author: darp, fabs
 '''
+
+import pylab
+import abc
+
 
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.patches import Polygon
-import pylab
 import numpy as np
-import abc
+
 
 class AbstractPlot:
     '''
@@ -20,13 +23,10 @@ class AbstractPlot:
 
     def __init__(self, params=dict()):
         
-        self._setPlottingParamsToDefault()
-        
-        for key, val in params.items():
-            self.__params[key] = val
-
+        self._initializePlottingParams(params)
+        self._initializeFigure()
         self.__functions = self.registerPlottingFunctions()
-        self.__ax = None
+        
 
     @abc.abstractmethod
     def registerPlottingFunctions( self ):
@@ -35,6 +35,12 @@ class AbstractPlot:
             returns a list of functions which add plots to the figure.
         '''
         return
+
+    def _initializePlottingParams(self, params):
+        self._setPlottingParamsToDefault()
+        
+        for key, val in params.items():
+            self.__params[key] = val
 
     def _setPlottingParamsToDefault(self):
         self.__params = { #save figure in path
@@ -56,41 +62,52 @@ class AbstractPlot:
                         'legend_scatterpoints' : 1,
                         'legend_location' : 4 }
         
-        
-    def __call__(self, filename=''):
-        '''
-            plot figure and save it optionally
-            to a pdf file
-        '''
-        params = self.__params
-        pylab.figure(figsize=params['figsize'])
+      
+    def _initializeFigure(self):
+        pylab.figure(figsize=self.__params['figsize'])
         self.__ax = pylab.subplot(111)
-
-        functions = self.__functions
-        for function in functions:
-            function()
-
-        # set legend parameters
-        if len(functions) > 1:
-            pylab.legend( loc = params['legend_location'],
-                        scatterpoints = params['legend_scatterpoints'] )
-            pylab.rc('legend', **{'fontsize':params['fontsize']})
-
-        # set labels
-        pylab.ylabel( params['ylabel'], fontsize=params['fontsize'] )
-        pylab.xlabel( params['xlabel'], fontsize=params['fontsize'] )
-
-        self._set_axis_parameter()
-
-        pylab.grid( params['grid'], linewidth=params['grid_linewidth'] )
-        pylab.tight_layout()
-
-        if filename != '' :
-            self._save_plot( filename )
-        else:
-            pylab.show()
+        
+    def __call__(self, filename = ''):
+        self._executePlotFunctions()
+        self._finishPlot()
+        self.showOrSavePlot(filename)
     
+    def _executePlotFunctions(self):
+        for function in self.__functions:
+            function()
+     
+    def _finishPlot(self):
+        
+        self._setLegendParameters()
+        self._setLabels()
+        self._set_axis_parameter()
+        
+        pylab.grid( self.__params['grid'], linewidth= self.__params['grid_linewidth'] )
+        pylab.tight_layout()
+ 
 
+    def showOrSavePlot(self, filename):
+        if filename == '':
+            pylab.show()
+        else:
+            self._save_plot( filename )
+    
+    # The following are plotting functions that may come in handy
+    # We might want to place this in a sep. class.
+    
+    def _setLegendParameters(self):
+    
+        if len(self.__functions) > 1:
+            pylab.legend( loc = self.__params['legend_location'],
+                        scatterpoints = self.__params['legend_scatterpoints'] )
+            pylab.rc('legend', **{'fontsize':self.__params['fontsize']})
+    
+    def _setLabels(self):
+        # set labels
+        pylab.ylabel( self.__params['ylabel'], fontsize=self.__params['fontsize'] )
+        pylab.xlabel( self.__params['xlabel'], fontsize=self.__params['fontsize'] )
+    
+    
     def _set_axis_parameter( self ):
         # set axis to equal length
         params = self.__params
@@ -120,29 +137,29 @@ class AbstractPlot:
                 ax_0.yaxis.grid( True, which='both' )
         # grid below bars and boxes
         ax_0.set_axisbelow(params['axisbelow'])
-
+    
     def _get_axis( self ):
         return self.__ax
-
+    
     def _save_plot( self, filename ):
         path = self.__params['path']
         savepath = '{}/{}'.format(path,filename)
         pp = PdfPages( savepath )
         pp.savefig()
         pp.close()
-
+    
     def _plot_line( self, x, y, label, params=dict() ):
         fparams = { 'color' : 'black',
                     'linestyle' : 'solid',
                     'linewidth' : 2.0 }
         fparams.update( params )
-
+    
         pylab.plot( x, y, 
                 color = fparams['color'],
                 linestyle = fparams['linestyle'],
                 linewidth = fparams['linewidth'],
                 label = label )
-
+    
     def _plot_scatter( self, x, y, label, params=dict() ):
         fparams = { 'dotsize' : 30,
                     'color' : 'black' }
@@ -151,18 +168,18 @@ class AbstractPlot:
                 s = fparams['dotsize'],
                 color = fparams['color'],
                 label = label )
-
+    
     def _plot_text( self, x, y, text, params=dict() ):
         fparams = { 'fontsize' : self.__params['fontsize'] }
         fparams.update( params )
         pylab.text( x, y, text, fontsize=fparams['fontsize'] )
-
+    
     def _plot_bars( self, vals, text, xlabels, params=dict() ):
         fparams = { 'bar_width' : 0.5,
                     'facecolor' : '#BBBBBB',
                     'edgecolor' : '#000000' }
         fparams.update( params )
-
+    
         bar_width = fparams['bar_width']
         xloc = np.array(range(len(vals))) + bar_width
         pylab.xticks( xloc )
@@ -174,7 +191,7 @@ class AbstractPlot:
                 ecolor=fparams['edgecolor'],
                 label=text,
                 align='center')
-
+    
     def _plot_boxplot( self, data, text, xlabels, params=dict() ):
         fparams = { 'color' : '#000000',
                     'facecolor' : '#FFFFFF',
@@ -187,14 +204,13 @@ class AbstractPlot:
         bp = pylab.boxplot( data, 
                             fparams['notched_plot'], 
                             fparams['show_outliers'] )
-
+    
         # customize boxplot color and linewidth
-        boxlines = bp['caps']
         for item in bp.values():
             pylab.setp(item, 
                     color=fparams['color'],
                     linewidth=fparams['linewidth'])
-
+    
         numBoxes = len(bp['boxes'])
         medians = range(numBoxes)
         for i in range(numBoxes):
@@ -205,7 +221,7 @@ class AbstractPlot:
                 boxX.append(box.get_xdata()[j])
                 boxY.append(box.get_ydata()[j])
             boxCoords = zip(boxX,boxY)
-
+    
             boxPolygon = Polygon( boxCoords, 
                                 facecolor=fparams['facecolor'], 
                                 linewidth=fparams['linewidth'], 
@@ -220,3 +236,4 @@ class AbstractPlot:
                 medianY.append(med.get_ydata()[j])
                 pylab.plot( medianX, medianY, fparams['color'] )
                 medians[i] = medianY[0]
+        

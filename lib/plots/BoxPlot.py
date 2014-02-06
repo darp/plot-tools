@@ -22,7 +22,7 @@ class BoxPlotExample( AbstractPlot ):
         data = self.__fake_boxplot_data()
         label = 'My Boxes'
         xlabels = ['a','b','c']
-        self._plot_boxplot( data, label, xlabels )
+        self._plot_boxplot(data, label, xlabels )
 
     def __fake_boxplot_data( self ):
         spread = pylab.rand(50) * 100
