@@ -1,6 +1,8 @@
 
 from lib.PaperPlotTemplate import PaperPlotTemplate
 
+# TODO: rename to MeanSequencePlot
+
 class MeanDeviationPlot(PaperPlotTemplate):
 
     def __init__( self, means, stds ):

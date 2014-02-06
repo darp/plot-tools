@@ -24,7 +24,7 @@ class ScatterPlotTool(PipeTool):
     
     def streamEnd(self):
         
-        plot = ScatterPlot()
+        plot = ScatterPlot(self.X, self.Y)
         plot(self.args.out)
         
         
