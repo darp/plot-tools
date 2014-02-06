@@ -19,8 +19,8 @@ class PipeTool():
                                     type = FileType('r'), default=sys.stdin,
                                     help='read input from the provided file')
 
-        self.argParser.add_argument('-o', '--out', nargs='?', type=
-                                    FileType('w'), default=sys.stdout,
+        self.argParser.add_argument('-o', '--out', nargs='?', type=str,
+                                    default='',
                                     help = 'write output to provided file')
 
         self.argParser.add_argument('-e', '--echo', action='store_true',

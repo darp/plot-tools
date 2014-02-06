@@ -329,12 +329,3 @@ class BoxPlotExample( PaperPlotTemplate ):
         data = [ data, d2, d2[::2,0] ]
 
         return data
-        
-
-if __name__ == '__main__':
-    linePlot = LinePlotExample()
-    linePlot()
-    barPlot = BarPlotExample()
-    barPlot()
-    boxPlot = BoxPlotExample()
-    boxPlot()
