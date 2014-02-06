@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-from lib.MeanSequencePlotTool import MeanSequencePlotTool
+from lib.tools.MeanSequencePlotTool import MeanSequencePlotTool
 
 DESCRIPTION = """Creates a plot showing a sequence of mean values and
 its corresponding standard deviations. Supply the sequence of mean

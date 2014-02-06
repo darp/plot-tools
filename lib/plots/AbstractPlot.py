@@ -5,21 +5,38 @@
     
     @author: darp
 '''
-import matplotlib.pyplot as plt
+
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.patches import Polygon
 import pylab
 import numpy as np
-import numpy.numarray as na
 import abc
 
-class PaperPlotTemplate(object):
+class AbstractPlot:
     '''
         abstract class with default values for plots
     '''
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, params=dict()):
+        
+        self._setPlottingParamsToDefault()
+        
+        for key, val in params.items():
+            self.__params[key] = val
+
+        self.__functions = self.registerPlottingFunctions()
+        self.__ax = None
+
+    @abc.abstractmethod
+    def registerPlottingFunctions( self ):
+        '''
+            this method has to be implemented by all subclasses. the method
+            returns a list of functions which add plots to the figure.
+        '''
+        return
+
+    def _setPlottingParamsToDefault(self):
         self.__params = { #save figure in path
                         'path' : './',
                         'figsize' : (6,6), 
@@ -38,11 +55,7 @@ class PaperPlotTemplate(object):
                         # legend parameters
                         'legend_scatterpoints' : 1,
                         'legend_location' : 4 }
-        for key, val in params.items():
-            self.__params[key] = val
-
-        self.__functions = self._get_plotting_functions()
-        self.__ax = None
+        
         
     def __call__(self, filename=''):
         '''
@@ -76,14 +89,7 @@ class PaperPlotTemplate(object):
             self._save_plot( filename )
         else:
             pylab.show()
-
-    @abc.abstractmethod
-    def _get_plotting_functions( self ):
-        '''
-            this method has to be implemented by all subclasses. the method
-            returns a list of functions which add plots to the figure.
-        '''
-        return
+    
 
     def _set_axis_parameter( self ):
         # set axis to equal length
@@ -214,118 +220,3 @@ class PaperPlotTemplate(object):
                 medianY.append(med.get_ydata()[j])
                 pylab.plot( medianX, medianY, fparams['color'] )
                 medians[i] = medianY[0]
-
-class LinePlotExample(PaperPlotTemplate):
-
-    def __init__( self ):
-        params = dict()
-        params['xlim'] = [0,5]
-        params['ylim'] = [0,20]
-        params['xlabel'] = 'Irgend Ne Kagge Uffe X Achse'
-        params['ylabel'] = 'Irgend Nen Schmarn Uffe Y Achse'
-        PaperPlotTemplate.__init__( self, params )
-
-    def _get_plotting_functions( self ):
-        functions = list()
-        functions.append( self.__plot_scatter1 )
-        functions.append( self.__plot_line1 )
-        functions.append( self.__plot_line2 )
-        functions.append( self.__plot_text1 )
-        return functions
-
-    def __plot_text1( self ):
-        x,y = 2.2,10
-        text = 'Ein Text'
-        self._plot_text( x, y, text )
-
-    def __plot_scatter1( self ):
-        x = np.linspace(0,10,100)
-        y = x**2 + 3
-        m = (y + np.random.randn(1,100)*3)[0]
-        params = { 'color' : 'gray' }
-        label = 'Irgendwelche Punkte'
-        self._plot_scatter( x, m, label, params )
-
-    def __plot_line1( self ):
-        x = np.linspace(0,10,100)
-        y = x**2 + 3
-        self._plot_line( x, y, 'Krasse Line' )
-
-    def __plot_line2( self ):
-        x = np.linspace(0,10,100)
-        y = x**2 + 10
-        params = { 'linestyle' : '--' }
-        self._plot_line( x, y, 'Krasse Line 2', params )
-
-
-class BarPlotExample(PaperPlotTemplate):
-
-    def __init__( self ):
-        params = dict()
-        params['xlim'] = [0,5]
-        params['ylim'] = [0,50]
-        params['xlabel'] = 'Krasse X-Achse'
-        params['ylabel'] = 'Krasse Y-Achse'
-        params['legend_location'] = 2
-        PaperPlotTemplate.__init__( self, params )
-
-    def _get_plotting_functions( self ):
-        functions = list()
-        functions.append( self.__plot_line1 )
-        functions.append( self.__plot_bars1 )
-        return functions
-    
-    def __plot_bars1( self ):
-        bars = np.array([10,20,30,25,40])
-        text = 'Irgendnen Barplot'
-        xlabels = ['P','E','N','I','S']
-        self._plot_bars( bars, text, xlabels ) 
-
-    def __plot_line1( self ):
-        x = [0,1,2,3,4,5,6]
-        y = np.ones(len(x))*4
-        params = { 'color' : 'red' }
-        label = 'Threshold'
-        self._plot_line( x, y, label, params )
-
-
-class BoxPlotExample( PaperPlotTemplate ):
-
-    def __init__( self ):
-        params = dict()
-        params['xlim'] = [0,4]
-        params['ylim'] = [1,1000]
-        params['ylog'] = True
-        params['grid_linewidth'] = 1.5
-        params['xlabel'] = 'Krasse X-Achse'
-        params['ylabel'] = 'Krasse Y-Achse'
-        PaperPlotTemplate.__init__( self, params )
-
-    def _get_plotting_functions( self ):
-        functions = list()
-        functions.append( self.__plot_boxplot1 )
-        return functions
-
-    def __plot_boxplot1( self ):
-        data = self.__fake_boxplot_data()
-        label = 'My Boxes'
-        xlabels = ['A','L','F']
-        self._plot_boxplot( data, label, xlabels )
-
-    def __fake_boxplot_data( self ):
-        spread = pylab.rand(50) * 100
-        center = pylab.ones(25) * 50
-        flier_high = pylab.rand(10) * 100 + 100
-        flier_low = pylab.rand(10) * -100
-        data = pylab.concatenate( (spread, center, flier_high, flier_low), 0 )
-
-        spread = pylab.rand(50) * 100
-        center = pylab.ones(25) * 40
-        flier_high = pylab.rand(10) * 100 + 100
-        flier_low = pylab.rand(10) * -100
-        d2 = pylab.concatenate( (spread, center, flier_high, flier_low), 0 )
-        data.shape = (-1, 1)
-        d2.shape = (-1, 1)
-        data = [ data, d2, d2[::2,0] ]
-
-        return data

@@ -1,8 +1,7 @@
 
-from lib.PaperPlotTemplate import PaperPlotTemplate
-import numpy as np
+from lib.plots.AbstractPlot import AbstractPlot
 
-class ScatterPlot(PaperPlotTemplate):
+class ScatterPlot(AbstractPlot):
     
     def __init__(self, X, Y):
         
@@ -10,13 +9,12 @@ class ScatterPlot(PaperPlotTemplate):
         self.Y = Y
 
         params = dict()
-        # params['xlim'] = [0, max(X)]
-        maxi = max(np.abs(X))+max(X)+10
-        # params['ylim'] = [-maxi,maxi]
+        params['xlim'] = [min(X), max(X)]
+        params['ylim'] = [min(Y), max(Y)]
         params['legend_location'] = 2
-        PaperPlotTemplate.__init__(self, params)
+        AbstractPlot.__init__(self, params)
 
-    def _get_plotting_functions( self ):
+    def registerPlottingFunctions( self ):
         functions = list()
         functions.append(self._plot_scatter1)
         return functions

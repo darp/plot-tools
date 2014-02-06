@@ -1,7 +1,6 @@
 
 from lib.PipeTool import PipeTool
-from lib.MeanDeviationPlot import MeanDeviationPlot
-import sys
+from lib.plots.MeanSequencePlot import MeanSequencePlot
 import numpy as np
 
 class MeanSequencePlotTool(PipeTool):
@@ -23,6 +22,6 @@ class MeanSequencePlotTool(PipeTool):
     
     def streamEnd(self):
         
-        plot = MeanDeviationPlot(np.array(self.mean), np.array(self.standardDev))
+        plot = MeanSequencePlot(np.array(self.mean), np.array(self.standardDev))
         plot(self.args.out)
         

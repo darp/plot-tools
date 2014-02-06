@@ -1,6 +1,6 @@
 
 from lib.PipeTool import PipeTool
-from lib.ScatterPlot import ScatterPlot
+from lib.plots.ScatterPlot import ScatterPlot
 import sys
 
 class ScatterPlotTool(PipeTool):

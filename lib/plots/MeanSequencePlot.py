@@ -1,9 +1,9 @@
 
-from lib.PaperPlotTemplate import PaperPlotTemplate
+from lib.plots.AbstractPlot import AbstractPlot
 
 # TODO: rename to MeanSequencePlot
 
-class MeanDeviationPlot(PaperPlotTemplate):
+class MeanSequencePlot(AbstractPlot):
 
     def __init__( self, means, stds ):
         self.means = means
@@ -15,9 +15,9 @@ class MeanDeviationPlot(PaperPlotTemplate):
         params['xlabel'] = 'n'
         params['ylabel'] = 'h(n)'
         params['legend_location'] = 2
-        PaperPlotTemplate.__init__(self, params)
+        AbstractPlot.__init__(self, params)
 
-    def _get_plotting_functions( self ):
+    def registerPlottingFunctions( self ):
         functions = list()
         functions.append(self.__plot_bars1)
         return functions
