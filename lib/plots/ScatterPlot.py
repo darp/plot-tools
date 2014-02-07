@@ -1,25 +1,27 @@
 
-from lib.plots.AbstractPlot import AbstractPlot
 
-class ScatterPlot(AbstractPlot):
-    
+from lib.plots.MultiPlot import MultiPlot
+
+class ScatterPlot(MultiPlot):
+
     def __init__(self, X, Y):
-        
-        self.X = X
-        self.Y = Y
+        MultiPlot.__init__(self, X, Y)
+    
 
+    def _multi_plot(self):
+        
+        X = self.X.pop()
+        Y = self.Y.pop()
+        
         params = dict()
         params['xlim'] = [min(X), max(X)]
         params['ylim'] = [min(Y), max(Y)]
         params['legend_location'] = 2
-        AbstractPlot.__init__(self, params)
-
-    def registerPlottingFunctions( self ):
-        functions = list()
-        functions.append(self._plot_scatter1)
-        return functions
-
-    def _plot_scatter1(self):
+        self.setPlottingParams(params)
         
-        self._plot_scatter(self, self.X, self.Y, '')
-        
+        # This isn't final yet.
+        if self.tmp == 0:
+            self._plot_scatter(X, Y, '',  { 'dotsize' : 30, 'color': 'b'})
+            self.tmp = 1
+        else:
+            self._plot_scatter(X, Y, '',  { 'dotsize' : 30, 'color': 'r'})

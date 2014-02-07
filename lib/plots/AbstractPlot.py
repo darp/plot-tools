@@ -26,7 +26,13 @@ class AbstractPlot:
         self._initializePlottingParams(params)
         self._initializeFigure()
         self.__functions = self.registerPlottingFunctions()
-        
+    
+    def _initializeFigure(self):
+        self.fig = pylab.figure(figsize=self.__params['figsize'])
+        self.ax =  pylab.subplot(111)    
+    
+    def setPlottingParams(self, params):
+        self._initializePlottingParams(params)
 
     @abc.abstractmethod
     def registerPlottingFunctions( self ):
@@ -61,11 +67,6 @@ class AbstractPlot:
                         # legend parameters
                         'legend_scatterpoints' : 1,
                         'legend_location' : 4 }
-        
-      
-    def _initializeFigure(self):
-        pylab.figure(figsize=self.__params['figsize'])
-        self.__ax = pylab.subplot(111)
         
     def __call__(self, filename = ''):
         self._executePlotFunctions()
@@ -139,7 +140,7 @@ class AbstractPlot:
         ax_0.set_axisbelow(params['axisbelow'])
     
     def _get_axis( self ):
-        return self.__ax
+        return self.ax
     
     def _save_plot( self, filename ):
         path = self.__params['path']
@@ -161,7 +162,7 @@ class AbstractPlot:
                 label = label )
     
     def _plot_scatter( self, x, y, label, params=dict() ):
-        fparams = { 'dotsize' : 30,
+        fparams = { 'dotsize' : 30, 
                     'color' : 'black' }
         fparams.update( params )
         pylab.scatter( x, y, 
@@ -183,7 +184,7 @@ class AbstractPlot:
         bar_width = fparams['bar_width']
         xloc = np.array(range(len(vals))) + bar_width
         pylab.xticks( xloc )
-        self.__ax.set_xticklabels( xlabels )
+        self.ax.set_xticklabels( xlabels )
         pylab.bar( xloc, vals, 
                 yerr=fparams['yerr'],
                 width=bar_width, 
@@ -200,7 +201,7 @@ class AbstractPlot:
                     'notched_plot' : 0,
                     'show_outliers' : '' }
         fparams.update( params )
-        self.__ax.set_xticklabels( xlabels )
+        self.ax.set_xticklabels( xlabels )
         bp = pylab.boxplot( data, 
                             fparams['notched_plot'], 
                             fparams['show_outliers'] )
@@ -226,7 +227,7 @@ class AbstractPlot:
                                 facecolor=fparams['facecolor'], 
                                 linewidth=fparams['linewidth'], 
                                 alpha=fparams['alpha'] )
-            self.__ax.add_patch(boxPolygon)
+            self.ax.add_patch(boxPolygon)
             # Now draw the median lines back over what we just filled in
             med = bp['medians'][i]
             medianX = []
