@@ -8,7 +8,7 @@ class MeanSequencePlot(AbstractPlot):
         self.stds = stds
         params = dict()
         params['xlim'] = [0,len(means)]
-        maxi = max(abs(means))+max(stds)+10
+        maxi = max(abs(means))+max(stds)+100
         params['ylim'] = [-maxi,maxi]
         params['xlabel'] = 'n'
         params['ylabel'] = 'h(n)'
