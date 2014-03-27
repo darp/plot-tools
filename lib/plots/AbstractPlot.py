@@ -160,6 +160,22 @@ class AbstractPlot:
                 linestyle = fparams['linestyle'],
                 linewidth = fparams['linewidth'],
                 label = label )
+
+    def _plot_vlines( self, x, y, label, params=dict() ):
+        fparams = { 'color' : 'black',
+                    'linestyle' : 'solid',
+                    'linewidth' : 2.0,
+                    'markersize' : 5 }
+        fparams.update( params )
+    
+        pylab.vlines( x, [0], y, 
+                color = fparams['color'],
+                linestyle = fparams['linestyle'],
+                linewidth = fparams['linewidth'],
+                label = label )
+        pylab.plot(x, y, 'o',
+                color = fparams['color'],
+                markersize = fparams['markersize'])
     
     def _plot_scatter( self, x, y, label, params=dict() ):
         fparams = { 'dotsize' : 30, 
@@ -175,22 +191,25 @@ class AbstractPlot:
         fparams.update( params )
         pylab.text( x, y, text, fontsize=fparams['fontsize'] )
     
-    def _plot_bars( self, vals, text, xlabels, params=dict() ):
+    def _plot_bars( self, vals, params=dict() ):
         fparams = { 'bar_width' : 0.5,
                     'facecolor' : '#BBBBBB',
-                    'edgecolor' : '#000000' }
+                    'edgecolor' : '#000000',
+                    'text' : '',
+                    'xlabels' : range(len(vals)),
+                    'yerr' : None }
         fparams.update( params )
     
         bar_width = fparams['bar_width']
         xloc = np.array(range(len(vals))) + bar_width
         pylab.xticks( xloc )
-        self.ax.set_xticklabels( xlabels )
+        self.ax.set_xticklabels( fparams['xlabels'] )
         pylab.bar( xloc, vals, 
                 yerr=fparams['yerr'],
                 width=bar_width, 
                 facecolor=fparams['facecolor'],
                 ecolor=fparams['edgecolor'],
-                label=text,
+                label=fparams['text'],
                 align='center')
     
     def _plot_boxplot( self, data, text, xlabels, params=dict() ):
