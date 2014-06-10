@@ -1,0 +1,4 @@
+class ImageHistogramTool(object):
+    pass
+
+

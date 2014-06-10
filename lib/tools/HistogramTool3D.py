@@ -2,6 +2,7 @@
 from lib.tools.ScatterPlotTool import ScatterPlotTool
 from lib.plots.Histogram3D import Histogram3D
 
+
 class HistogramTool3D(ScatterPlotTool):
     
     def __init__(self, description):
